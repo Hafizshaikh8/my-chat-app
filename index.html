@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>MY CHAT APP</h1>
+    <ul id="message-container"></ul>
+    <form id="chat_form">
+        <input type="text" id="message">
+        <button>Send</button>
+    </form>
+    <script>
+        //const socket= io('http://localhost:4000');
+         const socket= io();io
+        // socket.emit('message', 'hi server!');
+        // socket.on('server_message',(data) => {
+        //     console.log(data);
+        // })
+        let username='';
+        const messageContainer = document.getElementById('message-container');
+        const chatForm=document.getElementById('chat_form');
+        const inputMessage= document.getElementById('message');
+
+        chatForm.addEventListener('submit',(e)=>{
+            e.preventDefault();
+            if(inputMessage.value){
+                socket.emit('MESSAGE',inputMessage.value);
+                addMessage(inputMessage.value);
+                inputMessage.value='';
+            }
+        });
+
+        socket.on('SERVER_MESSAGE',(data)=>{
+            addMessage(data);
+        });
+
+        socket.on("ENTER_NAME",()=>{
+             username= prompt ('please enter your username');
+             if(username){
+                 socket.emit('USERNAME',username);
+             };
+        });
+
+        socket.on('USER_CONNECTED',data => addMessage(data));
+
+        function addMessage(data){
+            const message=document.createElement('li');
+            message.textContent=data;
+            messageContainer.appendChild(message);
+
+        }
+</script>
+</body>
+</html>
